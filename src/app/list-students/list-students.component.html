@@ -1,0 +1,11 @@
+<p>
+  list-students works!
+</p>
+<div>
+  <ul *ngFor ="let student of students let i = index">
+    <li> {{student._id}}: {{student.firstName}} {{student.lastName}} (index {{i}})
+      <button mat-button color="warn" [routerLink]="['/editStudent', student._id]">UPDATE</button>
+      <button mat-button color="warn" (click)="onDelete(student._id)">DELETE</button>
+    </li>
+  </ul>
+</div>
