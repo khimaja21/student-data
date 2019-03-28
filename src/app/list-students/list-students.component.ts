@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StudentService } from '../student.service';
 
 @Component({
@@ -6,21 +6,16 @@ import { StudentService } from '../student.service';
   templateUrl: './list-students.component.html',
   styleUrls: ['./list-students.component.css']
 })
-export class ListStudentsComponent implements OnInit, OnChanges {
+export class ListStudentsComponent implements OnInit {
   public students;
-  // initialize the call using StudentService
-  constructor(private _myService: StudentService) {}
+  constructor(private studentSVC: StudentService) {}
 
   ngOnInit() {
     this.getStudents();
   }
 
-  ngOnChanges() {
-    this.getStudents();
-  }
-
   getStudents() {
-    this._myService.getStudents().subscribe(
+    this.studentSVC.getStudents().subscribe(
       data => {
         this.students = data;
       },
@@ -30,6 +25,9 @@ export class ListStudentsComponent implements OnInit, OnChanges {
   }
 
   onDelete(studentId: string) {
-    this._myService.deleteStudent(studentId);
+    this.studentSVC.deleteStudent(studentId).subscribe(() => {
+      console.log('Deleted:' + studentId);
+      this.getStudents();
+    });
   }
 }

@@ -9,16 +9,16 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
   styleUrls: ['./new-student-form.component.css']
 })
 export class NewStudentFormComponent implements OnInit {
-  @Input() firstName: string;
-  @Input() lastName: string;
-  mode = 'add';
+  @Input() public firstName: string;
+  @Input() public lastName: string;
+  private mode = 'add';
   private id: string;
   public studentRecord;
 
   constructor(
-    private route: ActivatedRoute,
+    private studentSVC: StudentService,
     private router: Router,
-    private _myService: StudentService
+    public route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -26,10 +26,11 @@ export class NewStudentFormComponent implements OnInit {
       if (paramMap.has('_id')) {
         this.mode = 'edit'; /*request had a parameter _id */
         this.id = paramMap.get('_id');
-        this._myService.getStudentById(this.id).subscribe(
+
+        this.studentSVC.getStudentById(this.id).subscribe(
           // read data and assign to public variable students
           data => {
-            this.studentRecord = JSON.parse(JSON.stringify(data));
+            this.studentRecord = data;
             this.firstName = this.studentRecord.firstName;
             this.lastName = this.studentRecord.lastName;
           },
@@ -44,15 +45,22 @@ export class NewStudentFormComponent implements OnInit {
   }
 
   onSubmit() {
-    /* console.log("You submitted: " + this.firstName + " " + this.lastName);
-     this._myService.addStudents(this.firstName, this.lastName); */
     if (this.mode === 'add') {
-      this._myService.addStudents(this.firstName, this.lastName);
+      this.studentSVC
+        .addStudents(this.firstName, this.lastName)
+        .subscribe(responseData => {
+          console.log(responseData);
+          this.router.navigate(['/listStudents']);
+        });
     }
     if (this.mode === 'edit') {
-      this._myService.updateStudent(this.id, this.firstName, this.lastName);
+      this.studentSVC
+        .updateStudent(this.id, this.firstName, this.lastName)
+        .subscribe(responseData => {
+          console.log(responseData);
+          this.router.navigate(['/listStudents']);
+        });
     }
 
-    this.router.navigate(['/listStudents']);
   }
 }
